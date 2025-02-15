@@ -144,12 +144,21 @@ class Model
         }
     }
 
-    public function find(int $id, string $className): object
+    // public function find(int $id, string $className): object
+    // {
+    //     $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+
+    //     $this->query = $this->connection->prepare($sql);
+    //     $this->query->setFetchMode(\PDO::FETCH_CLASS, $className);
+    //     $this->query->execute([$id]);
+    //     return $this->query->fetch();
+    // }
+    public function find(int $id): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = ?";
 
         $this->query = $this->connection->prepare($sql);
-        $this->query->setFetchMode(\PDO::FETCH_CLASS, $className);
+        $this->query->fetch(\PDO::FETCH_ASSOC);
         $this->query->execute([$id]);
         return $this->query->fetch();
     }

@@ -1,8 +1,6 @@
-
-
 <main>
-<?php
-$errores = $data;
+    <?php
+    $errores = $data;
     ?>
     <h1>Formulario de Registro</h1>
     <form method="post" action="store" enctype="multipart/form-data">
@@ -24,11 +22,19 @@ $errores = $data;
         <label for="fecha_nacimiento">Fecha de nacimiento:</label>
         <input type="date" name="fecha_nacimiento"><br><br>
         <p class="error"><?php if (isset($errores['fecha_nacimiento'])) echo $errores['fecha_nacimiento']; ?></p>
-        <label for="saldo_inicial">Saldo Inicial:</label>
-        <input type="number" name="saldo_inicial"><br><br>
-        <p class="error"><?php if (isset($errores['saldo_inicial'])) echo $errores['saldo_inicial']; ?></p>
+        <label for="rol">Selecciona el rol:</label>
+        <select name="rol" id="rol">
+            <option value="admin">Administrador</option>
+            <option value="user">Usuario</option>
+        </select>
+        <p class="error"><?php if (isset($errores['rol'])) echo $errores['rol']; ?></p>
+        <label for="puntos_ataque">Ataque:</label>
+        <input type="number" name="puntos_ataque"><br><br>
+        <p class="error"><?php if (isset($errores['puntos_ataque'])) echo $errores['puntos_ataque']; ?></p>
+        <label for="nivel_vida">Vida:</label>
+        <input type="number" name="nivel_vida"><br><br>
+        <p class="error"><?php if (isset($errores['nivel_vida'])) echo $errores['nivel_vida']; ?></p>
         <button type="submit" name="submit">Registrar</button>
         <p class="error"><?php if (isset($errores['registro'])) echo $errores['registro']; ?></p>
     </form>
 </main>
-

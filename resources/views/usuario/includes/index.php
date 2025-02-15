@@ -18,10 +18,10 @@
             <th>Nick</th>
             <th>Email</th>
             <th>Fecha de Nacimiento</th>
-            <th>Contraseña</th>
             <th>rol</th>
             <th>Ataque</th>
             <th>Vida</th>
+            <th>Acciones</th>
 
 
         </tr>
@@ -42,7 +42,7 @@
             }
             echo '<td><form method="POST" action="/usuario/borrar" class="inline-form"><input type="hidden" name="id" value="'
                 . $fila->id . '"><button type="submit" name="submit" class="btn btn-delete">Borrar</button>
-    </form><a href="/usuario/modificar/' . $fila->id . '" class="btn btn-control">
+    </form><a href="/usuario/' . $fila->id . '" class="btn btn-control">
         <button type="button" class="btn">Panel de Control</button>
     </a></td>';;
         }

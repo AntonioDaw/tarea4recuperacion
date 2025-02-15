@@ -16,7 +16,6 @@ Route::get('/usuario/nuevo', [UsuarioController::class, 'create']);
 Route::get('/usuario/modificar/:id', [UsuarioController::class, 'modificar']);
 Route::get('/usuario/pagina/:inicio', [UsuarioController::class, 'index']);
 Route::get('/usuario/:id', [UsuarioController::class, 'show']);
-Route::get('/usuario/:id', [UsuarioController::class, 'show']);
 Route::post('/usuario/table', [UsuarioController::class, 'createTable']);
 Route::post('/usuario/login', [UsuarioController::class, 'loginUser']);
 Route::post('/usuario/traspaso', [UsuarioController::class, 'traspaso']);

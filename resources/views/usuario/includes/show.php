@@ -1,8 +1,6 @@
 <main>
 
-    <h1>Bienvenid@ <?php echo isset($_SESSION['nombre']) ? $_SESSION['nombre'] : ''; ?></h1>
-
-    <h1>Formulario de Registro</h1>
+    <h1>Panel de control</h1>
     <form method="post" action="update" enctype="multipart/form-data">
         <label for="nombre">Nombre:</label>
         <input type="hidden" name="id" value="<?php echo isset($data['id']) ? $data['id'] : ''; ?>">

@@ -265,7 +265,7 @@ class UsuarioController extends Controller
 
     public function show($id)
     {
-        if ($id == $_SESSION['id']) {
+        if ($id == $_SESSION['id']|| $_SESSION['rol'] == 'admin') {
             $usuarioModel = new UsuarioModel();
             $usuario = $usuarioModel->find($id);
             return $this->view('usuario.show', $usuario);

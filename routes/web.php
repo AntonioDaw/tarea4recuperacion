@@ -14,7 +14,7 @@ Route::get('/usuario/login', [UsuarioController::class, 'login']);
 Route::get('/usuario/salir', [UsuarioController::class, 'salir']);
 Route::get('/usuario/nuevo', [UsuarioController::class, 'create']);
 Route::get('/usuario/modificar/:id', [UsuarioController::class, 'modificar']);
-Route::get('/usuario/:cantidad/:inicio', [UsuarioController::class, 'index']);
+Route::get('/usuario/pagina/:inicio', [UsuarioController::class, 'index']);
 Route::get('/usuario/:id', [UsuarioController::class, 'show']);
 Route::get('/usuario/:id', [UsuarioController::class, 'show']);
 Route::post('/usuario/table', [UsuarioController::class, 'createTable']);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use PDO;
 use PDOException;
 
 /**
@@ -117,6 +118,31 @@ class Model
 
             $this->query = $this->connection->prepare($sql);
             $this->query->setFetchMode(\PDO::FETCH_CLASS, $className);
+            $this->query->execute($this->values);
+            //para obtener los datos del select
+            return $this->query->fetchall();
+        }
+    }
+
+    public function getFetchAll(): array
+    {
+        if (empty($this->query)) {
+            $sql = "SELECT {$this->select} FROM {$this->table}";
+
+            // Se comprueban si están definidos para añadirlos a la cadena $sql
+            if ($this->where) {
+                $sql .= " WHERE {$this->where}";
+            }
+            if ($this->limit) {
+                $sql .= " LIMIT {$this->limit}";
+            }
+
+            if ($this->orderBy) {
+                $sql .= " ORDER BY {$this->orderBy}";
+            }
+
+            $this->query = $this->connection->prepare($sql);
+            $this->query->setFetchMode(PDO::FETCH_OBJ);
             $this->query->execute($this->values);
             //para obtener los datos del select
             return $this->query->fetchall();

@@ -1,6 +1,6 @@
 <nav>
     <ul><?php if(isset($_SESSION['nick'])):?>
-        <li><a href="/usuarios/5/0">Inicio</a></li>
+        <li><a href="/usuario/pagina/1">Inicio</a></li>
         <?php endif?>
         <?php if(!isset($_SESSION['nick'])):?>
         <li><a href="/usuario/login">Login</a></li>

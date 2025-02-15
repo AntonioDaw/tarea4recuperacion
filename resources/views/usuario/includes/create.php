@@ -24,6 +24,7 @@
         <p class="error"><?php if (isset($errores['fecha_nacimiento'])) echo $errores['fecha_nacimiento']; ?></p>
         <label for="rol">Selecciona el rol:</label>
         <select name="rol" id="rol">
+            <option value="">-</option>
             <option value="admin">Administrador</option>
             <option value="user">Usuario</option>
         </select>

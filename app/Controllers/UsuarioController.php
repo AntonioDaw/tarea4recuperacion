@@ -207,7 +207,7 @@ class UsuarioController extends Controller
                 } catch (\PDOException $e) {
                     // Manejar el error
                     $errores['mensaje'] = "Error en la consulta: " . $e->getMessage();
-                    return $this->view('usuarios.create', $errores);
+                    return $this->view('usuario.create', $errores);
                 }
             } else {
                 return $this->view('usuario.create', $errores);
@@ -280,50 +280,50 @@ class UsuarioController extends Controller
             $nombre = Funciones::filtrado($_POST["nombre"]);
 
             if (empty($nombre)) {
-                $_SESSION['errores']['nombre'] = "Nombre no introducido.";
+                $datos['errores']['nombre'] = "Nombre no introducido.";
             } elseif (Funciones::validarNombre($nombre)) {
                 $datos['nombre'] = Funciones::sanitizarNombreApellidos($nombre);
             } else {
-                $_SESSION['errores']['nombre'] = "Formato nombre incorrecto";
+               $datos['errores']['nombre'] = "Formato nombre incorrecto";
             }
             $apellidos = Funciones::filtrado($_POST["apellidos"]);
 
             if (empty($apellidos)) {
-                $_SESSION['errores']['apellidos'] = "Apellidos no introducido.";
+                $datos['errores']['apellidos'] = "Apellidos no introducido.";
             } elseif (Funciones::validarApellidos($apellidos)) {
                 $datos['apellidos'] = Funciones::sanitizarNombreApellidos($apellidos);
             } else {
-                $_SESSION['errores']['apellidos'] = "Formato apellidos incorrecto";
+                $datos['errores']['apellidos'] = "Formato apellidos incorrecto";
             }
             $nick = Funciones::filtrado($_POST["nick"]);
 
             if (empty($nick)) {
-                $_SESSION['errores']['nick'] = "Nick no introducido.";
+                $datos['errores']['nick'] = "Nick no introducido.";
             } elseif (Funciones::validarNick($nick)) {
                 $datos['nick'] = $nick;
             } else {
-                $_SESSION['errores']['nick'] = "Formato nick incorrecto";
+                $datos['errores']['nick'] = "Formato nick incorrecto";
             }
             $fecha_nacimiento = Funciones::filtrado($_POST["fecha_nacimiento"]);
             if (empty($fecha_nacimiento)) {
-                $_SESSION['errores']['fecha_nacimiento'] = "Fecha no introducida";
+                $datos['errores']['fecha_nacimiento'] = "Fecha no introducida";
             } elseif (Funciones::fechaValida($fecha_nacimiento)) {
                 $datos['fecha_nacimiento'] = $fecha_nacimiento;
             } else {
-                $_SESSION['errores']['fecha_nacimiento'] = "fecha no valida";
+                $datos['errores']['fecha_nacimiento'] = "fecha no valida";
             }
 
             $rol = Funciones::filtrado($_POST["rol"]);
 
             if (empty($rol)) {
-                $errores['rol'] = "Rol no introducido";
+                $datos['errores']['rol'] = "Rol no introducido";
             } elseif (Funciones::validarRol($rol)) {
                 $datos['rol'] = $rol;
             } else {
-                $errores['rol'] = $rol;
+                $datos['errores']['rol'] = $rol;
             }
             $id = $_POST['id'];
-            if (empty($errores)) {
+            if (empty($datos['errores'])) {
                 $usuarioModel = new UsuarioModel();
                 try {
                     $usuarioModel->update($id, $datos);
@@ -331,10 +331,10 @@ class UsuarioController extends Controller
                 } catch (\PDOException $e) {
                     // Manejar el error
                     $_SESSION['errores']['mensaje'] = "Error en la consulta: " . $e->getMessage();
-                    return $this->view('usuarios.show');
+                    return $this->view('usuario.show');
                 }
             } else {
-                return $this->redirect($_SESSION['id']);
+                return $this->view('usuario.show',$datos);
             }
         }
     }

@@ -1,14 +1,17 @@
 <main>
     <a href="/usuario/nuevo">Nuevo usuario</a>
     <h1>Listado usuarios</h1>
-    <form method="get" action="/usuarios/5/0">
+    <form method="post" action="index">
         <input type="text" name="nombre" placeholder="Nombre">
         <input type="text" name="apellidos" placeholder="Apellidos">
         <input type="text" name="nick" placeholder="Nick">
         <input type="text" name="email" placeholder="Email">
         <input type="date" name="fecha_nacimiento">
-        <input type="number" name="saldo_min" placeholder="Saldo mínimo">
-        <input type="number" name="saldo_max" placeholder="Saldo máximo">
+        <input type="text" name="rol" placeholder="rol">
+        <input type="number" name="ataque_min" placeholder="ataque mínimo">
+        <input type="number" name="ataque_max" placeholder="ataque máximo">
+        <input type="number" name="vida_min" placeholder="vida mínimo">
+        <input type="number" name="vida_max" placeholder="vida máximo">
         <button type="submit" name="submit">Buscar</button>
     </form>
     <table>
@@ -32,7 +35,7 @@
 
 
         echo "</tr>";
-        foreach ($data['usuarios'] as $fila) {
+        foreach ($data as $fila) {
             echo "<tr>";
 
             foreach ($fila as $clave => $valor) {
@@ -51,9 +54,5 @@
 
     </table>
     <?php
-
-    for ($i = 0; $i < $data['paginas']; $i++) {
-        echo ($i > 0 ? ' | ' : '') . '<a href="/usuario/pagina/' . ($i + 1) . '">' . ($i + 1) . '</a>';
-    }
     ?>
 </main>

@@ -1,6 +1,6 @@
 <nav>
-    <ul><?php if(isset($_SESSION['nick'])):?>
-        <li><a href="/usuario/pagina/1">Inicio</a></li>
+    <ul><?php if(isset($_SESSION['rol'])&&$_SESSION['rol']=='admin'):?>
+        <li><a href="/usuario/index">Administracion</a></li>
         <?php endif?>
         <?php if(!isset($_SESSION['nick'])):?>
         <li><a href="/usuario/login">Login</a></li>

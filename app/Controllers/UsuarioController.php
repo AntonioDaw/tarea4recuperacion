@@ -265,13 +265,18 @@ class UsuarioController extends Controller
 
     public function show($id)
     {
-        if ($id == $_SESSION['id']|| $_SESSION['rol'] == 'admin') {
-            $usuarioModel = new UsuarioModel();
-            $usuario = $usuarioModel->find($id);
-            return $this->view('usuario.show', $usuario);
-        } else {
-            return $this->redirect($_SESSION['id']);
+        if(isset($_SESSION['id'])){
+            if ($id == $_SESSION['id'] || $_SESSION['rol'] == 'admin') {
+                $usuarioModel = new UsuarioModel();
+                $usuario = $usuarioModel->find($id);
+                return $this->view('usuario.show', $usuario);
+            } else {
+                return $this->redirect($_SESSION['id']);
+            }
+        }else{
+            return $this->view('usuario.login');
         }
+       
     }
 
     public function update()
@@ -338,13 +343,12 @@ class UsuarioController extends Controller
             }
         }
     }
-    public function index($pagina)
-
-    {
+    public function index(){
+        
+        if(isset($_SESSION['rol'])&&$_SESSION['rol']=='admin'){
         $datos = [];
-        $n_elementos = 10;
-        if (isset($_GET["submit"]) && $_SERVER["REQUEST_METHOD"] == "GET") {
-            $nombre = Funciones::filtrado($_GET["nombre"]);
+        if (isset($_POST["submit"]) && $_SERVER["REQUEST_METHOD"] == "POST") {
+            $nombre = Funciones::filtrado($_POST["nombre"]);
 
             if (empty($nombre)) {
             } elseif (Funciones::validarNombre($nombre)) {
@@ -352,7 +356,7 @@ class UsuarioController extends Controller
             } else {
                 $errores['nombre'] = "Formato nombre incorrecto";
             }
-            $apellidos = Funciones::filtrado($_GET["apellidos"]);
+            $apellidos = Funciones::filtrado($_POST["apellidos"]);
 
             if (empty($apellidos)) {
             } elseif (Funciones::validarApellidos($apellidos)) {
@@ -360,7 +364,7 @@ class UsuarioController extends Controller
             } else {
                 $errores['apellidos'] = "Formato apellidos incorrecto";
             }
-            $nick = Funciones::filtrado($_GET["nick"]);
+            $nick = Funciones::filtrado($_POST["nick"]);
 
             if (empty($nick)) {
             } elseif (Funciones::validarNick($nick)) {
@@ -368,7 +372,7 @@ class UsuarioController extends Controller
             } else {
                 $errores['nick'] = "Formato nick incorrecto";
             }
-            $email = Funciones::filtrado($_GET["email"]);
+            $email = Funciones::filtrado($_POST["email"]);
 
             if (empty($email)) {
             } elseif (Funciones::validarMail($email)) {
@@ -376,7 +380,7 @@ class UsuarioController extends Controller
             } else {
                 $errores['email'] = "Email no valido";
             }
-            $fecha_nacimiento = Funciones::filtrado($_GET["fecha_nacimiento"]);
+            $fecha_nacimiento = Funciones::filtrado($_POST["fecha_nacimiento"]);
 
             if (empty($fecha_nacimiento)) {
             } elseif (Funciones::fechaValida($fecha_nacimiento)) {
@@ -385,57 +389,89 @@ class UsuarioController extends Controller
                 $errores['fecha_nacimiento'] = "fecha no valida";
             }
 
-            $saldo_min = Funciones::filtrado($_GET["saldo_min"]);
+            $rol = Funciones::filtrado($_POST["rol"]);
 
-            if (empty($saldo_min)) {
-            } elseif (Funciones::validarEuros($saldo_min)) {
-                $datos['saldo_min'] = floatval($saldo_min);
+            if (empty($rol)) {
+            } elseif (Funciones::validarRol($rol)) {
+                $datos['rol'] = $rol;
+            } else {
+                $errores['rol'] = "Rol no valido";
+            }
+            $ataque_min = Funciones::filtrado($_POST["ataque_min"]);
+
+            if (empty($ataque_min)) {
+            } elseif (Funciones::validarAtaque($ataque_min)) {
+                $datos['ataque_min'] = intval($ataque_min);
             } else {
             }
-            $saldo_max = Funciones::filtrado($_GET["saldo_max"]);
+            $ataque_max = Funciones::filtrado($_POST["ataque_max"]);
 
-            if (empty($saldo_max)) {
-            } elseif (Funciones::validarEuros($saldo_max)) {
-                $datos['saldo_max'] = floatval($saldo_max);
+            if (empty($ataque_max)) {
+            } elseif (Funciones::validarAtaque($ataque_max)) {
+                $datos['ataque_max'] = intval($ataque_max);
+            } else {
+            }
+
+            $vida_min = Funciones::filtrado($_POST["vida_min"]);
+
+            if (empty($vida_min)) {
+            } elseif (Funciones::validarVida($vida_min)) {
+                $datos['vida_min'] = intval($vida_min);
+            } else {
+            }
+            $vida_max = Funciones::filtrado($_POST["vida_max"]);
+
+            if (empty($vida_max)) {
+            } elseif (Funciones::validarVida($vida_max)) {
+                $datos['vida_max'] = intval($vida_max);
             } else {
             }
         } else {
-            $_GET['nombre'] = '';
-            $_GET['apellidos'] = '';
-            $_GET['nick'] = '';
-            $_GET['email'] = '';
-            $_GET['fecha_nacimiento'] = '';
-            $_GET['saldo_min'] = '';
-            $_GET['saldo_max'] = '';
+            $_POST['nombre'] = '';
+            $_POST['apellidos'] = '';
+            $_POST['nick'] = '';
+            $_POST['email'] = '';
+            $_POST['fecha_nacimiento'] = '';
+            $_POST['rol'] = '';
+            $_POST['ataque_min'] = '';
+            $_POST['ataque_max'] = '';
+            $_POST['vida_min'] = '';
+            $_POST['vida_max'] = '';
         }
 
-        // $parametros = [];
-        // foreach ($datos as $clave => $valor) {
-        //     if ($clave === 'saldo_min') {
-        //         $parametros[] = ['saldo_inicial', '>=', $valor];
-        //     } elseif ($clave === 'saldo_max') {
-        //         $parametros[] = ['saldo_inicial', '<=', $valor];
-        //     } else {
-        //         $parametros[] = [$clave, 'LIKE', '%' . $valor . '%'];
-        //     }
-        // }
+        $parametros = [];
+        foreach ($datos as $clave => $valor) {
+            switch ($clave) {
+                case 'vida_min':
+                    $parametros[] = ['nivel_vida', '>=', $valor];
+                    break;
+                case 'vida_max':
+                    $parametros[] = ['nivel_vida', '<=', $valor];
+                    break;
+                case 'ataque_min':
+                    $parametros[] = ['puntos_ataque', '>=', $valor];
+                    break;
+                case 'ataque_max':
+                    $parametros[] = ['puntos_ataque', '<=', $valor];
+                    break;
+                default:
+                    $parametros[] = [$clave, 'LIKE', '%' . $valor . '%'];
+                    break;
+            }
+        }
         $usuarioModel = new UsuarioModel();
         $consulta = $usuarioModel->select('*');
-        // foreach ($parametros as $parametro) {
-        //     $consulta = $consulta->where($parametro[0], $parametro[1], $parametro[2]);
-        // }
-        $consulta = $consulta->limit($n_elementos, ($pagina - 1) *$n_elementos);
+        foreach ($parametros as $parametro) {
+            $consulta = $consulta->where($parametro[0], $parametro[1], $parametro[2]);
+            //$consulta = $consulta->orWhere($parametro[0], $parametro[1], $parametro[2]);
+        }
         $usuarios = $consulta->getFetchAll();
-        $usuarioModel = new UsuarioModel();
-        $consulta_count = $usuarioModel->select('COUNT(*) AS total');
-        // foreach ($parametros as $parametro) {
-        //     $consulta_count = $consulta_count->where($parametro[0], $parametro[1], $parametro[2]);
-        // }
-        $registros = $consulta_count->getFetchAssoc()['total'];
-        $paginas = ceil($registros /$n_elementos);
-        $datos['paginas'] = $paginas;
-        $datos['usuarios'] = $usuarios;
-        return $this->view('usuario.index', $datos);
+        return $this->view('usuario.index', $usuarios);
+    }elseif(isset($_SESSION['id'])){
+        return $this->redirect('/usuario/atacar/1');
+    }else{
+        return $this->redirect('/usuario/login');
+    }
     }
     public function delete()
     {
@@ -444,7 +480,53 @@ class UsuarioController extends Controller
             $usuarioModel = new UsuarioModel();
             $usuarioModel->delete($id);
 
-            return $this->redirect('/');
+            return $this->redirect('/usuario/index');
         }
+    }
+
+    public function atacar($pagina)
+    {
+        if(isset($_SESSION['id'])){
+
+        }else{
+            return $this->redirect('/usuario/login');
+        }
+        $n_elementos = 10;
+        $usuarioModel = new UsuarioModel();
+        $consulta = $usuarioModel->select('*');
+        $consulta = $consulta->limit($n_elementos, ($pagina - 1) * $n_elementos);
+        $usuarios = $consulta->getFetchAll();
+        $usuarioModel = new UsuarioModel();
+        $consulta_count = $usuarioModel->select('COUNT(*) AS total');
+        // foreach ($parametros as $parametro) {
+        //     $consulta_count = $consulta_count->where($parametro[0], $parametro[1], $parametro[2]);
+        // }
+        $registros = $consulta_count->getFetchAssoc()['total'];
+        $paginas = ceil($registros / $n_elementos);
+        $datos['paginas'] = $paginas;
+        $datos['usuarios'] = $usuarios;
+        return $this->view('usuario.atacar', $datos);
+    }
+
+    public function ataque()
+    {
+        $usuarioModel = new UsuarioModel();
+
+        $atacante = $usuarioModel->find($_SESSION['id']);
+        $daño = $atacante['puntos_ataque'];
+        $objetivos = $_POST['objetivos'] ?? [];
+        $n_objetivos = count($objetivos);
+        $daño_por_usuario = ceil($daño / $n_objetivos);
+        $usuarioModel = new UsuarioModel();
+        $transaccion = $usuarioModel->ataque($daño_por_usuario, $objetivos);
+        $_SESSION['mensaje'] = $transaccion;
+        return $this->redirect('/usuario/atacar/1',);
+    }
+
+    public function salir()
+    {
+        session_unset();
+        session_destroy();
+        return $this->redirect('/usuario/login');
     }
 }

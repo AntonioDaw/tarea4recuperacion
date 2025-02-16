@@ -87,13 +87,13 @@ class Model
     }
 
     // Devuelve todos los registros de una tabla
-    public function all(string $className): array
+    public function all(): array
     {
         // La consulta
         $sql = "SELECT * FROM {$this->table}";
         // Preparar y ejecutar la consulta
         $this->query = $this->connection->prepare($sql);
-        $this->query->setFetchMode(\PDO::FETCH_CLASS, $className);
+        $this->query->setFetchMode(PDO::FETCH_OBJ);
         $this->query->execute();
         return $this->query->fetchall();
     }
@@ -191,6 +191,25 @@ class Model
 
     // Se añade where a la sentencia con operador específico
     public function where(string $column, string $operator, string $value = null, string $chainType = 'AND'): object
+    {
+        if ($value == null) { // Si no se pasa operador, por defecto =
+            $value = $operator;
+            $operator = '=';
+        }
+
+        // Si ya había algo de antes 
+        if ($this->where) {
+            $this->where .= " {$chainType} {$column} {$operator} ?";
+        } else {
+            $this->where = "{$column} {$operator} ?";
+        }
+
+        $this->values[] = $value;
+
+        return $this;
+    }
+
+    public function orWhere(string $column, string $operator, string $value = null, string $chainType = 'OR'): object
     {
         if ($value == null) { // Si no se pasa operador, por defecto =
             $value = $operator;
@@ -323,6 +342,54 @@ class Model
             return $error;
         }
     }
+
+    public function ataque($daño, $objetivos)
+    {
+        try {
+            $this->connection->beginTransaction();
+            $usuarios_muertos = [];  // Guardamos los usuarios que quedan con 0 o menos de salud
+
+            // Actualizar la salud de cada usuario atacado
+            foreach ($objetivos as $id_objetivo) {
+                // Obtener el usuario atacado
+
+                $usuario = $this->find(intval($id_objetivo));
+                if ($usuario['nivel_vida'] - $daño <= 0) {
+                    $salud = 0;
+                } else {
+                    $salud = $usuario['nivel_vida'] - $daño;
+                }
+
+
+                $sql_restar = "UPDATE usuarios SET nivel_vida = $salud WHERE id = :id";
+                $this->query = $this->connection->prepare($sql_restar);
+                $this->query->execute([
+                    ':id' => $id_objetivo,
+                ]);
+
+                // Verificar si la salud llegó a 0
+                if ($salud == 0) {
+                    $usuarios_muertos[] = $usuario['nombre'];  // Guardamos el nombre de los usuarios caídos
+                }
+            }
+
+            // Si todo se ha ejecutado correctamente, hacemos commit
+            $this->connection->commit();
+
+            // Mostrar el informe con los usuarios cuya salud ha llegado a 0
+            if (count($usuarios_muertos) > 0) {
+                return "Usuarios cuya salud ha llegado a 0: " . implode(", ", $usuarios_muertos);
+            } else {
+                return  "Ningún usuario ha llegado a 0 de salud.";
+            }
+        } catch (\Exception $e) {
+            // deshacemos la transacción 
+            $this->connection->rollback();
+            $error = "Error en el registro" . $e->getMessage();
+            return $error;
+        }
+    }
+
     public function listado(string $criterio, int $registros, int $inicio, string $className): array
     {
         $sql = "SELECT * FROM {$this->table} ORDER BY {$criterio} ASC LIMIT {$registros} OFFSET {$inicio}";
@@ -341,11 +408,10 @@ class Model
 
     public function limit(string $registros, string $inicio): object
     {
-        
-            $this->limit = " {$registros} OFFSET {$inicio}";
-        
+
+        $this->limit = " {$registros} OFFSET {$inicio}";
+
 
         return $this;
     }
-
 }
